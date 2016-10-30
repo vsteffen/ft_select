@@ -31,6 +31,7 @@ typedef struct      s_elem {
 typedef struct			s_data {
               size_t  max_length;
               int     max_column;
+              int     jump_x;
               t_elem  *elem;
               int     win_y;
               int     win_x;
