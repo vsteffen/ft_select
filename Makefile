@@ -19,11 +19,15 @@ MKDIR =	/bin/mkdir
 AR =	/usr/bin/ar
 RANLIB = /usr/bin/ranlib
 
-LIBS = -framework OpenGL \
-	   -framework AppKit \
-	   $(ROOT)/libft/libft.a
+LIBS = $(ROOT)/lib/libft.a \
+			-ltermcap
 
 SRC = ft_select.c \
+			term.c \
+			singleton.c \
+			signals.c \
+			list_elem.c \
+			window.c
 
 # OBJ_NAME = $(wildcard $(ROOT)/srcs/$(SRC))
 
@@ -54,6 +58,9 @@ libclean: fclean
 libft-make:
 	@echo "$(showStartRule) for libft"
 	@$(MAKE) -C libft
+	@cp libft/include/libft.h libft/include/color_style.h include
+	@cp libft/libft.a lib
+	@echo "Header and library compiled of libft copied to folder \"include\" and \"lib\" respectively"
 	@echo "$(showEndRule) for libft"
 
 libft-clean:
@@ -71,10 +78,12 @@ libft-re:
 	@$(MAKE) -C libft re
 	@echo "$(showEndRule) for libft"
 
+# prepFold:
+# 	@$(MKDIR) lib
 
 $(NAME): $(OBJ)
 	@echo " \033[33m\033[4m\033[1m → Make rule \033[0m"
-	@echo "Creating OBJ files if they do not exist"
+	@echo "Creating OBJ files if they do not exist or have changed"
 	@echo "Building $@"
 	@$(CC) -o $@ $(CFLAGS) $(OBJ) $(LIBS)
 	@echo "\033[32m ╔════════════════╗"
@@ -101,5 +110,8 @@ fclean: clean
 	@echo "Deleting $(NAME)."
 	$(RM) -f $(NAME)
 	@echo "\033[32m$(NAME) deleted.\033[0m\n"
+	@echo "Deleting lib content."
+	$(RM) -f $(LIBS)
+	@echo "\033[32mLib content deleted.\033[0m\n"
 
 re: fclean all
