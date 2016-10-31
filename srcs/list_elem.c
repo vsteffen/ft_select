@@ -1,13 +1,16 @@
 #include "ft_select.h"
 
-t_elem	*create_elem(char *content, t_data *data)
+t_elem	*create_elem(char *content, t_data *data, int nb_line)
 {
 	t_elem	*elem;
 
   (void)data;
 	elem = mallocp(sizeof(t_elem));
-  ft_bzero(elem, sizeof(t_elem));
 	elem->content = content;
+	elem->pick = 0;
+	elem->nb_line = nb_line;
+	elem->prec = NULL;
+	elem->next = NULL;
 	return (elem);
 }
 

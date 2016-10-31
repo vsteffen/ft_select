@@ -10,11 +10,11 @@ t_termios	*singleton_termios(t_termios *termios, int i)
 	return (singleton);
 }
 
-t_data		*singleton_data(t_data *termios, int i)
+t_data		*singleton_data(t_data *data, int i)
 {
 	static t_data *singleton = NULL;
 
 	if (i)
-		singleton = termios;
+		singleton = data;
 	return (singleton);
 }

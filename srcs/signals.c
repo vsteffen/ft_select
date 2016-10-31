@@ -5,6 +5,7 @@ void	signal_end(int sig)
 {
 	invert_term();
 	free(singleton_termios(NULL, 0));
+	exec_tcap("cl");
   // ft_putstr("Je suis un singleton qui rage quit\n");
 	exit(sig);
 }

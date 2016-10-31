@@ -27,7 +27,8 @@ SRC = ft_select.c \
 			singleton.c \
 			signals.c \
 			list_elem.c \
-			window.c
+			window.c \
+			display.c \
 
 # OBJ_NAME = $(wildcard $(ROOT)/srcs/$(SRC))
 
