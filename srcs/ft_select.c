@@ -14,10 +14,10 @@
 
 int		get_nb_line(t_data *data, size_t length)
 {
-	printf("data->win_x = %d\n", data->win_x);
+	// printf("data->win_x = %d\n", data->win_x);
 	if ((int)(length % data->win_x) == 0)
-		return ((int)length / data->win_x);
-	return (((int)length / data->win_x) + 1);
+		return ((int)length / data->win_x + 1);
+	return (((int)length / data->win_x) + 2);
 }
 
 void	init_elem(t_data *data, char **av)
@@ -34,9 +34,11 @@ void	init_elem(t_data *data, char **av)
 	{
 		if ((length = ft_strlen(av[i])) > length_tmp)
 			length_tmp = length;
-		data->elem = add_elem(data->elem, create_elem(ft_strdup(av[i]), data, get_nb_line(data, length)));
+		data->elem = add_elem(data->elem, create_elem(ft_strdup(av[i]), data, length));
 		i++;
 	}
+	data->elem->current = 1;
+	data->current = data->elem;
 	data->max_length = length_tmp;
 }
 
@@ -88,29 +90,55 @@ int init_select(t_data *data, char **av, char **env, int ac)
 	return (1);
 }
 
-void display_fail(t_data *data)
+void handle_boucle(t_data *data, char buf[11])
 {
-	int		pos;
-	int		line;
-	int		column;
+	int		i;
+	t_elem		*elem;
 
-	column = data->win_x / 2 - 3;
-	line = data->win_y / 2;
-	exec_tcap("cl");
-	exec_tcap("vi");
-	pos = 0;
-	while (pos < line)
+	i = 0;
+	elem = data->current;
+	if (buf[0] == 27 && buf[1] == 0)
 	{
-		exec_tcap("do");
-		pos++;
+		//ECHAP
 	}
-	while (pos < column)
+	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 68 && buf[3] == 0)
 	{
-		exec_tcap("nd");
-		pos++;
+		elem->current = 0;
+		if (elem->prec)
+			elem = elem->prec;
+		elem->current = 1;
+		data->current = elem;
 	}
-	pos = 0;
-	ft_putstr("RESIZE WIN PLS");
+	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 67 && buf[3] == 0)
+	{
+		elem->current = 0;
+		if (elem->next)
+			elem = elem->next;
+		elem->current = 1;
+		data->current = elem;
+	}
+	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 65 && buf[3] == 0)
+	{
+		elem->current = 0;
+		while (i < data->max_column && elem->prec)
+		{
+			elem = elem->prec;
+			i++;
+		}
+		elem->current = 1;
+		data->current = elem;
+	}
+	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 66 && buf[3] == 0)
+	{
+		elem->current = 0;
+		while (i < data->max_column && elem->next)
+		{
+			elem = elem->next;
+			i++;
+		}
+		elem->current = 1;
+		data->current = elem;
+	}
 }
 
 void boucle(t_data *data)
@@ -128,9 +156,16 @@ void boucle(t_data *data)
 			display_fail(data);
 		else
 		{
-			// printf("123456789012ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\n");
-			ft_putchar(buf[0]);
-			ft_bzero(buf, 11);
+			if (buf[0] == 104)
+				print_data(data);
+			else
+			{
+				handle_boucle(data, buf);
+				display_all(data);
+				// printf("123456789012ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\n");
+				// printf("Touche = [%d][%d][%d][%d][%d][%d][%d][%d]\n", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
+				ft_bzero(buf, 11);
+			}
 		}
 	}
 	free(singleton_termios(NULL, 0));

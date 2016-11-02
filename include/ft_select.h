@@ -25,6 +25,8 @@ typedef struct termios	t_termios;
 
 typedef struct      s_elem {
   char        *content;
+  size_t      length;
+  int         current;
   int         pick;
 	int					nb_line;
   struct s_elem   *prec;
@@ -37,6 +39,7 @@ typedef struct			s_data {
 							int			max_line;
               int     win_ok;
               t_elem  *elem;
+              t_elem  *current;
               int     win_y;
               int     win_x;
 							int			ac;
@@ -48,11 +51,12 @@ void		invert_term(void);
 void		exec_tcap(char *tcap);
 void	signal_end(int sig);
 void	signal_handler(void);
-t_elem	*create_elem(char *content, t_data *data, int nb_line);
+t_elem	*create_elem(char *content, t_data *data, size_t length);
 t_elem	*add_elem(t_elem *list, t_elem *elem);
 void	sigwinch(int sig);
 void	get_window_info(t_data *data);
 void	get_winsize(t_data *data);
+int		get_nb_line(t_data *data, size_t length);
 t_data		*singleton_data(t_data *data, int i);
 void		display_fail(t_data *data);
 void	display_all(t_data *data);

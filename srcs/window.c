@@ -5,6 +5,8 @@ unsigned int	get_max_column(t_data *data)
   int tmp_win_x;
 
   tmp_win_x = data->win_x - data->max_length;
+  if (tmp_win_x <= 0)
+    return (1);
   return ((tmp_win_x / (data->max_length + 1) + 1));
 }
 
@@ -28,7 +30,7 @@ int   verif_win(t_data *data)
 
 int   get_max_line(t_data *data)
 {
-	return ((data->win_y - 1) / 2 + ((data->win_y - 1) % 2));
+	return (data->win_y - 1);
 	// 	return (data->win_y / 2);
 	// return ((data->win_y / 2) - 1);
 }
@@ -48,6 +50,15 @@ void get_window_info(t_data *data)
   }
 }
 
+void actualize_nb_line(t_data *data, t_elem *list)
+{
+  while (list)
+  {
+    	list->nb_line = get_nb_line(data, list->length);
+      list = list->next;
+  }
+}
+
 void	sigwinch(int sig)
 {
   t_data *data;
@@ -59,7 +70,7 @@ void	sigwinch(int sig)
   data = singleton_data(NULL, 0);
 	// tmp = data->win_ok;
 
-		exec_tcap("cl");
+	exec_tcap("cl");
   get_window_info(data);
 	if (data->win_ok)
 	{
@@ -67,6 +78,7 @@ void	sigwinch(int sig)
 		// exit(0);
 			exec_tcap("cl");
 			exec_tcap("ve");
+      actualize_nb_line(data, data->elem);
 			display_all(data);
 	}
 	else
