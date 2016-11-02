@@ -22,7 +22,7 @@ void display_fail(t_data *data)
 		pos++;
 	}
 	pos = 0;
-	ft_putstr("RESIZE WIN PLS");
+	my_putstr("RESIZE WIN PLS");
 }
 
 void choose_style(t_elem *elem)
@@ -42,12 +42,12 @@ void choose_style(t_elem *elem)
 	// }
 }
 
-void display_content(char *str, t_data *data)
+void display_content(t_elem *elem, t_data *data)
 {
 	size_t	i;
 
-	ft_putstr(str);
-	i = ft_strlen(str);
+	my_putstr(elem->content);
+	i = elem->length;
 	while (i < data->max_length)
 	{
 		exec_tcap("nd");
@@ -88,12 +88,12 @@ void display_all(t_data *data)
 	while (list && end_page)
 	{
 		choose_style(list);
-		display_content(list->content, data);
+		display_content(list, data);
 		exec_tcap("me");
 		if (actual_column == data->max_column)
 		{
 			if (verif_empty_line(&line_used, data, list->next))
-				ft_putstr("\n\n");
+				my_putstr("\n\n");
 			else
 			{
 				// printf("\n*-*-*-*-*-*-*-*-*\n");
@@ -105,7 +105,7 @@ void display_all(t_data *data)
 		}
 		else
 		{
-			ft_putchar(' ');
+			exec_tcap("nd");
 			actual_column++;
 		}
 		// line_used += list->nb_line;

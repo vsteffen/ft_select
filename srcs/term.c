@@ -43,6 +43,18 @@ t_termios	*init_term(char **env)
 	return (ret);
 }
 
+void my_putstr(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		my_putchar(str[i]);
+		i++;
+	}
+}
+
 int			my_putchar(int c)
 {
 	static int	fd = 0;
@@ -79,6 +91,7 @@ void		invert_term(void)
 		tcgetattr(0, current);
 		if (isatty(0))
 			tcsetattr(0, TCSADRAIN, tmp_terms);
+		exec_tcap("ve");
 		free(tmp_terms);
 		singleton_termios(current, 1);
 	}

@@ -40,6 +40,7 @@ typedef struct			s_data {
               int     win_ok;
               t_elem  *elem;
               t_elem  *current;
+							t_elem	*last;
               int     win_y;
               int     win_x;
 							int			ac;
@@ -60,7 +61,10 @@ int		get_nb_line(t_data *data, size_t length);
 t_data		*singleton_data(t_data *data, int i);
 void		display_fail(t_data *data);
 void	display_all(t_data *data);
+int			my_putchar(int c);
+void my_putstr(char *str);
 
 void print_elem(t_elem *elem);
-
+void print_pick(t_elem *list);
+void quit_prog(t_data *data, int result);
 #endif

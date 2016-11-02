@@ -4,6 +4,8 @@ A FAIRE :
 --> faire une fonction qui détecte le nombre d'elem sur la page precedente
 
 Touche ECHAP  = [27][0][0][0][0][0][0][0]
+Touche DELETE = [127][0][0][0][0][0][0][0]
+Touche RETURN = [10][0][0][0][0][0][0][0]
 Touche SPACE  = [32][0][0][0][0][0][0][0]
 Touche GAUCHE = [27][91][68][0][0][0][0][0]
 Touche DROITE = [27][91][67][0][0][0][0][0]

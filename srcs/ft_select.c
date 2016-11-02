@@ -20,6 +20,13 @@ int		get_nb_line(t_data *data, size_t length)
 	return (((int)length / data->win_x) + 2);
 }
 
+t_elem	*get_last_elem(t_elem *list)
+{
+	while (list->next)
+		list = list->next;
+	return (list);
+}
+
 void	init_elem(t_data *data, char **av)
 {
 	unsigned int	i;
@@ -38,6 +45,7 @@ void	init_elem(t_data *data, char **av)
 		i++;
 	}
 	data->elem->current = 1;
+	data->last = get_last_elem(data->elem);
 	data->current = data->elem;
 	data->max_length = length_tmp;
 }
@@ -80,7 +88,7 @@ int init_select(t_data *data, char **av, char **env, int ac)
 	}
 	ft_bzero(data, sizeof(t_data));
 
-	// signal_handler();
+	signal_handler();
 
 	signal(SIGWINCH, sigwinch);
 	singleton_data(data, 1);
@@ -88,6 +96,25 @@ int init_select(t_data *data, char **av, char **env, int ac)
 	init_elem(data, av);
 	get_window_info(data);
 	return (1);
+}
+
+void print_pick(t_elem *list)
+{
+	if (list)
+	{
+		if (list->pick == 1)
+			ft_putstr(list->content);
+		list = list->next;
+	}
+	while (list)
+	{
+		if (list->pick == 1)
+		{
+			ft_putchar(' ');
+			ft_putstr(list->content);
+		}
+		list = list->next;
+	}
 }
 
 void handle_boucle(t_data *data, char buf[11])
@@ -99,41 +126,69 @@ void handle_boucle(t_data *data, char buf[11])
 	elem = data->current;
 	if (buf[0] == 27 && buf[1] == 0)
 	{
-		//ECHAP
+		quit_prog(data, 0);
+	}
+	else if (buf[0] == 10 && buf[1] == 0)
+	{
+		quit_prog(data, 1);
+	}
+	else if (buf[0] == 127 && buf[1] == 0)
+	{
+		// DELETE
+	}
+	else if (buf[0] == 32 && buf[1] == 0)
+	{
+		if (data->current->pick == 0)
+			data->current->pick = 1;
+		else
+			data->current->pick = 0;
 	}
 	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 68 && buf[3] == 0)
-	{
+	{ // GAUCHE
 		elem->current = 0;
 		if (elem->prec)
 			elem = elem->prec;
+		else
+			elem = data->last;
 		elem->current = 1;
 		data->current = elem;
 	}
 	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 67 && buf[3] == 0)
-	{
+	{ // DROITE
 		elem->current = 0;
 		if (elem->next)
 			elem = elem->next;
+		else
+			elem = data->elem;
 		elem->current = 1;
 		data->current = elem;
 	}
 	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 65 && buf[3] == 0)
-	{
+	{ // HAUT
 		elem->current = 0;
-		while (i < data->max_column && elem->prec)
+		while (i < data->max_column)
 		{
-			elem = elem->prec;
+			if (elem->prec)
+				elem = elem->prec;
+			else
+			{
+				// i = data->max_column - i;
+				elem = data->last;
+			}
 			i++;
 		}
 		elem->current = 1;
 		data->current = elem;
 	}
 	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 66 && buf[3] == 0)
-	{
+	{ // BAS
 		elem->current = 0;
-		while (i < data->max_column && elem->next)
+		while (i < data->max_column)
 		{
-			elem = elem->next;
+			if (elem->next)
+				elem = elem->next;
+			else
+				elem = data->elem;
 			i++;
 		}
 		elem->current = 1;
@@ -163,7 +218,7 @@ void boucle(t_data *data)
 				handle_boucle(data, buf);
 				display_all(data);
 				// printf("123456789012ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\n");
-				// printf("Touche = [%d][%d][%d][%d][%d][%d][%d][%d]\n", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
+				printf("Touche = [%d][%d][%d][%d][%d][%d][%d][%d]\n", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
 				ft_bzero(buf, 11);
 			}
 		}
@@ -178,8 +233,8 @@ int	main(int ac, char **av, char **env) {
 	{
 		if (!init_select(&data, av, env, ac))
 			return (0);
-		print_elem(data.elem);
-		print_data(&data);
+		// print_elem(data.elem);
+		// print_data(&data);
 
 		// printf("123456789012 123456789012 123456789012 123456789012 123456789012 123456789012 123456789012 123456789012 123456789012 123456789012 123456789012 123456789012 123456789012\n");
 
