@@ -14,11 +14,11 @@ void	get_winsize(t_data *data)
 {
 	struct winsize w;
 
-	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-	data->win_y = w.ws_row;
-	data->win_x = w.ws_col;
   if (!isatty(0))
     exit(1);
+	ioctl(0, TIOCGWINSZ, &w);
+	data->win_y = w.ws_row;
+	data->win_x = w.ws_col;
 }
 
 int   verif_win(t_data *data)

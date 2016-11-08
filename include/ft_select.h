@@ -37,6 +37,7 @@ typedef struct			s_data {
               size_t  max_length;
               int     max_column;
 							int			max_line;
+              int     more_one_line;
               int     win_ok;
               t_elem  *elem;
               t_elem  *current;

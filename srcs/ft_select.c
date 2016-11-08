@@ -88,7 +88,7 @@ int init_select(t_data *data, char **av, char **env, int ac)
 	}
 	ft_bzero(data, sizeof(t_data));
 
-	signal_handler();
+	// signal_handler();
 
 	signal(SIGWINCH, sigwinch);
 	singleton_data(data, 1);
@@ -117,6 +117,48 @@ void print_pick(t_elem *list)
 	}
 }
 
+void free_elem(t_elem *elem)
+{
+	free(elem->content);
+	free(elem);
+}
+
+
+void delete_button(t_data *data, t_elem *delem)
+{
+	t_elem	*prec;
+	t_elem	*next;
+
+	prec = delem->prec;
+	next = delem->next;
+	if (!next && !prec)
+	{
+		free_elem(delem);
+		quit_prog(data, 0);
+	}
+	if (&delem->content == &data->elem->content)
+		data->elem = (next) ? next : prec;
+	if (&delem == &data->last)
+		data->elem = (prec) ? prec : next;
+	// printf("Le dernier vaut [%s]\n", data->last->content);
+	free_elem(delem);
+	if (prec)
+	{
+		prec->next = next;
+		data->current = prec;
+		prec->current = 1;
+	}
+	if (next)
+	{
+		next->prec = prec;
+		if (!prec)
+		{
+			data->current = next;
+			next->current = 1;
+		}
+	}
+}
+
 void handle_boucle(t_data *data, char buf[11])
 {
 	int		i;
@@ -135,13 +177,19 @@ void handle_boucle(t_data *data, char buf[11])
 	else if (buf[0] == 127 && buf[1] == 0)
 	{
 		// DELETE
+		delete_button(data, data->current);
+		// elem = data->elem;
+		// elem->current = 1;
 	}
 	else if (buf[0] == 32 && buf[1] == 0)
-	{
+	{ // ESPACE
 		if (data->current->pick == 0)
 			data->current->pick = 1;
 		else
 			data->current->pick = 0;
+		data->current->current = 0;
+		data->current = (data->current->next) ? (data->current->next) : (data->elem);
+		data->current->current = 1;
 	}
 	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 68 && buf[3] == 0)
 	{ // GAUCHE
@@ -166,7 +214,7 @@ void handle_boucle(t_data *data, char buf[11])
 	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 65 && buf[3] == 0)
 	{ // HAUT
 		elem->current = 0;
-		while (i < data->max_column)
+		while (i < data->max_column && data->more_one_line)
 		{
 			if (elem->prec)
 				elem = elem->prec;
@@ -183,7 +231,7 @@ void handle_boucle(t_data *data, char buf[11])
 	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 66 && buf[3] == 0)
 	{ // BAS
 		elem->current = 0;
-		while (i < data->max_column)
+		while (i < data->max_column && data->more_one_line)
 		{
 			if (elem->next)
 				elem = elem->next;
@@ -218,7 +266,7 @@ void boucle(t_data *data)
 				handle_boucle(data, buf);
 				display_all(data);
 				// printf("123456789012ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\n");
-				printf("Touche = [%d][%d][%d][%d][%d][%d][%d][%d]\n", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
+				// printf("Touche = [%d][%d][%d][%d][%d][%d][%d][%d]\n", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
 				ft_bzero(buf, 11);
 			}
 		}

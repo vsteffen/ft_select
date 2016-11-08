@@ -81,6 +81,7 @@ void display_all(t_data *data)
 
 	actual_column = 1;
 	end_page = 1;
+	data->more_one_line = 0;
 	exec_tcap("cl");
 	exec_tcap("ve");
 	list = data->elem;
@@ -90,6 +91,7 @@ void display_all(t_data *data)
 		choose_style(list);
 		display_content(list, data);
 		exec_tcap("me");
+		// printf("data->max_column = [%d], [%d], [%d]\n", data->max_column, data->win_x, data->win_y);
 		if (actual_column == data->max_column)
 		{
 			if (verif_empty_line(&line_used, data, list->next))
@@ -101,6 +103,8 @@ void display_all(t_data *data)
 				// printf("\n*-*-*-*-*-*-*-*-*\n");
 				end_page = 0;
 			}
+			if (list->next)
+				data->more_one_line = 1;
 			actual_column = 1;
 		}
 		else
