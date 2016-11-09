@@ -34,7 +34,7 @@ SRC = ft_select.c \
 
 OBJ = $(patsubst %.c, $(OPATH)/%.o, $(SRC))
 
-CFLAGS = -I $(HPATH) -Wall -Wextra -Werror -I $(HPATH) -g
+CFLAGS = -I $(HPATH) -Wall -Wextra -Werror -I $(HPATH)
 
 ROOT =		$(shell /bin/pwd)
 OPATH =		$(ROOT)/objs

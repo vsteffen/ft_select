@@ -42,11 +42,25 @@ void choose_style(t_elem *elem)
 	// }
 }
 
+void put_color(t_elem *elem)
+{
+	if (elem->color == 2)
+		my_putstr(FG_LCYAN);
+	else if (elem->color == 3)
+		my_putstr(FG_RED);
+	else if (elem->color == 1)
+		my_putstr(FG_WHITE);
+	else
+		my_putstr(FG_LGRAY);
+}
+
 void display_content(t_elem *elem, t_data *data)
 {
 	size_t	i;
 
+	put_color(elem);
 	my_putstr(elem->content);
+	my_putstr(CS_RESET);
 	i = elem->length;
 	while (i < data->max_length)
 	{
@@ -72,6 +86,42 @@ int	verif_empty_line(int *line_used, t_data *data, t_elem *nxt_elem)
 		return (1);
 }
 
+t_elem	*get_page_of_elem(t_data *data)
+{
+	t_elem		*list;
+	int				line_used;
+	int				actual_column;
+	int				end_page;
+	t_elem		*beg_page;
+
+	actual_column = 1;
+	end_page = 0;
+	list = data->elem;
+ 	line_used = list->nb_line;
+	beg_page = list;
+	while (list)
+	{
+		if (list->current == 1)
+			return beg_page;
+		if (actual_column == data->max_column)
+		{
+			if (!verif_empty_line(&line_used, data, list->next))
+			{
+				if (list->next)
+				{
+					line_used = list->next->nb_line;
+					beg_page = list->next;
+				}
+			}
+			actual_column = 1;
+		}
+		else
+			actual_column++;
+		list = list->next;
+	}
+	return (data->elem);
+}
+
 void display_all(t_data *data)
 {
 	t_elem		*list;
@@ -84,10 +134,14 @@ void display_all(t_data *data)
 	data->more_one_line = 0;
 	exec_tcap("cl");
 	exec_tcap("ve");
-	list = data->elem;
+	list = get_page_of_elem(data);
+	// printf("Elem return = [%s]\n", list->content);
  	line_used = list->nb_line;
-	while (list && end_page)
+	while (list)
 	{
+		// if (list->current == 1)
+		// 	end_page = 0;
+		list->column = actual_column;
 		choose_style(list);
 		display_content(list, data);
 		exec_tcap("me");
@@ -101,7 +155,11 @@ void display_all(t_data *data)
 				// printf("\n*-*-*-*-*-*-*-*-*\n");
 				// printf("line_used = %d", line_used);
 				// printf("\n*-*-*-*-*-*-*-*-*\n");
-				end_page = 0;
+				// if (end_page)
+				// {
+					list = NULL;
+					continue ;
+				// }
 			}
 			if (list->next)
 				data->more_one_line = 1;

@@ -193,23 +193,33 @@ void handle_boucle(t_data *data, char buf[11])
 	}
 	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 68 && buf[3] == 0)
 	{ // GAUCHE
-		elem->current = 0;
-		if (elem->prec)
-			elem = elem->prec;
-		else
-			elem = data->last;
-		elem->current = 1;
-		data->current = elem;
+		// if (1 < elem->column)
+		// {
+			elem->current = 0;
+			if (elem->prec)
+				elem = elem->prec;
+			else
+				elem = data->last;
+			elem->current = 1;
+			data->current = elem;
+		// }
 	}
 	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 67 && buf[3] == 0)
 	{ // DROITE
-		elem->current = 0;
-		if (elem->next)
-			elem = elem->next;
-		else
-			elem = data->elem;
-		elem->current = 1;
-		data->current = elem;
+		// if (elem->column < data->max_column)
+		// {
+			elem->current = 0;
+			if (elem->next)
+				elem = elem->next;
+			else
+				elem = data->elem;
+			elem->current = 1;
+			data->current = elem;
+		// }
+		// else
+		// {
+		// 	printf("Max_line = %d\n", data->max_line);
+		// }
 	}
 	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 65 && buf[3] == 0)
 	{ // HAUT
@@ -244,6 +254,21 @@ void handle_boucle(t_data *data, char buf[11])
 	}
 }
 
+// int	get_real_max_line(t_data *data)
+// {
+// 	int	line_used;
+// 	t_elem *list;
+//
+// 	list = data->elem;
+// 		if (!list->next || line_used + list->next->nb_line - 1 > data->max_line)
+// 		{
+// 			// printf("HAHA = %d > %d\n", line_used + list->next->nb_line - 1, data->max_line);
+// 			return (0);
+// 		}
+// 		line_used += list->next->nb_line;
+// 		return (1);
+// }
+
 void boucle(t_data *data)
 {
 	char	buf[11];
@@ -263,6 +288,7 @@ void boucle(t_data *data)
 				print_data(data);
 			else
 			{
+
 				handle_boucle(data, buf);
 				display_all(data);
 				// printf("123456789012ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\n");
@@ -283,6 +309,7 @@ int	main(int ac, char **av, char **env) {
 			return (0);
 		// print_elem(data.elem);
 		// print_data(&data);
+		exec_tcap("cs");
 
 		// printf("123456789012 123456789012 123456789012 123456789012 123456789012 123456789012 123456789012 123456789012 123456789012 123456789012 123456789012 123456789012 123456789012\n");
 

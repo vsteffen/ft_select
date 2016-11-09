@@ -4,6 +4,7 @@
 void quit_prog(t_data *data, int result)
 {
 	exec_tcap("cl");
+	// exec_tcap("pf");
 	if (result == 1)
 		print_pick(data->elem);
 	signal_end(0);

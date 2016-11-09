@@ -20,6 +20,7 @@
 # include <curses.h>
 # include <signal.h>
 # include <sys/ioctl.h>
+// # include <sys/stat.h>
 
 typedef struct termios	t_termios;
 
@@ -28,7 +29,10 @@ typedef struct      s_elem {
   size_t      length;
   int         current;
   int         pick;
+  int         column;
+  int         line;
 	int					nb_line;
+  int         color;
   struct s_elem   *prec;
   struct s_elem   *next;
 }           t_elem;
@@ -37,6 +41,7 @@ typedef struct			s_data {
               size_t  max_length;
               int     max_column;
 							int			max_line;
+              int     real_max_line;
               int     more_one_line;
               int     win_ok;
               t_elem  *elem;
