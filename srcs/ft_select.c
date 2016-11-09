@@ -158,6 +158,25 @@ void delete_button(t_data *data, t_elem *delem)
 		}
 	}
 }
+void search_elem(t_data *data)
+{
+	t_elem	*list;
+
+	list = data->elem;
+	while (list)
+	{
+		if (ft_strcmp(data->to_found, list->content) >= 0)
+		{
+			data->current->current = 0;
+			data->current = list;
+			data->current->current = 1;
+			free(data->to_found);
+			data->to_found = NULL;
+			return ;
+		}
+		list = list->next;
+	}
+}
 
 void handle_boucle(t_data *data, char buf[11])
 {
@@ -172,14 +191,44 @@ void handle_boucle(t_data *data, char buf[11])
 	}
 	else if (buf[0] == 10 && buf[1] == 0)
 	{
-		quit_prog(data, 1);
+		if (data->search)
+		{
+			search_elem(data);
+			data->search = 0;
+		}
+		else if (data->help)
+			data->help = 0;
+		else
+			quit_prog(data, 1);
 	}
 	else if (buf[0] == 127 && buf[1] == 0)
 	{
 		// DELETE
-		delete_button(data, data->current);
+		if (data->search)
+		{
+			delete_search(data);
+		}
+		else if (data->help)
+			data->help = 0;
+		else
+			delete_button(data, data->current);
 		// elem = data->elem;
 		// elem->current = 1;
+	}
+	else if (buf[0] == 104 && buf[1] == 0)
+	{
+		if (data->help)
+			data->help = 0;
+		else
+		{
+			data->help = 1;
+			// display_help();
+		}
+			// display_help();
+	}
+	else if (buf[0] == 114 && buf[1] == 0)
+	{
+		data->search = 1;
 	}
 	else if (buf[0] == 32 && buf[1] == 0)
 	{ // ESPACE
@@ -284,17 +333,17 @@ void boucle(t_data *data)
 			display_fail(data);
 		else
 		{
-			if (buf[0] == 104)
-				print_data(data);
+			if (data->help && !(buf[0] == 104 && buf[1] == 0))
+				display_help();
 			else
 			{
-
 				handle_boucle(data, buf);
+				if (!data->help)
 				display_all(data);
-				// printf("123456789012ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\n");
-				// printf("Touche = [%d][%d][%d][%d][%d][%d][%d][%d]\n", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
-				ft_bzero(buf, 11);
 			}
+				// printf("123456789012ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\n");
+				printf("Touche = [%d][%d][%d][%d][%d][%d][%d][%d]\n", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
+				ft_bzero(buf, 11);
 		}
 	}
 	free(singleton_termios(NULL, 0));

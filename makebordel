@@ -4,6 +4,7 @@ A FAIRE :
 --> faire une fonction qui détecte le nombre d'elem sur la page precedente
 --> le tiret g
 -> la size lors d'un ctrl-Z
+-> free tout le bordel sur le search
 Touche ECHAP  = [27][0][0][0][0][0][0][0]
 Touche DELETE = [127][0][0][0][0][0][0][0]
 Touche RETURN = [10][0][0][0][0][0][0][0]
@@ -12,3 +13,4 @@ Touche GAUCHE = [27][91][68][0][0][0][0][0]
 Touche DROITE = [27][91][67][0][0][0][0][0]
 Touche HAUT   = [27][91][65][0][0][0][0][0]
 Touche BAS    = [27][91][66][0][0][0][0][0]
+Touche R      = [114][0][0][0][0][0][0][0]

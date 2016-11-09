@@ -20,9 +20,12 @@
 # include <curses.h>
 # include <signal.h>
 # include <sys/ioctl.h>
-// # include <sys/stat.h>
+# include <sys/stat.h>
+
 
 typedef struct termios	t_termios;
+
+typedef struct stat		t_stat;
 
 typedef struct      s_elem {
   char        *content;
@@ -44,6 +47,9 @@ typedef struct			s_data {
               int     real_max_line;
               int     more_one_line;
               int     win_ok;
+              int     help;
+              int     search;
+              char    *to_found;
               t_elem  *elem;
               t_elem  *current;
 							t_elem	*last;
@@ -69,7 +75,7 @@ void		display_fail(t_data *data);
 void	display_all(t_data *data);
 int			my_putchar(int c);
 void my_putstr(char *str);
-
+void display_help();
 void print_elem(t_elem *elem);
 void print_pick(t_elem *list);
 void quit_prog(t_data *data, int result);

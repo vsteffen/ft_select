@@ -2,26 +2,39 @@
 
 int		get_color(char *name)
 {
-	int		fd;
-
+	int		ret;
+	t_stat		stat;
 	// if ((fd = open(name, O_DIRECTORY)))
 	// {
 	// 	close(fd);
 	// 	printf("LOL");
 	// 	return (2);
 	// }
-	if ((fd = open(name, O_SYMLINK, S_IXUSR | S_IXGRP | S_IXOTH)) != -1)
+	if ((ret = lstat(name, &stat)) != -1)
 	{
-		close(fd);
-		return (3);
-	}
-	if ((fd = open(name, O_SYMLINK)) != -1)
-	{
-		close(fd);
-		return (1);
+		printf("File = [%s]\n", name);
+		if (S_ISDIR(stat.st_mode))
+			return (2);
+		else if (stat.st_mode & S_IXUSR || stat.st_mode & S_IXGRP ||
+				stat.st_mode & S_IXOTH)
+				return (3);
+		else
+				return (1);
 	}
 	else
 		return (0);
+	// if ((fd = open(name, O_SYMLINK, S_IXUSR | S_IXGRP | S_IXOTH)) != -1)
+	// {
+	// 	close(fd);
+	// 	return (3);
+	// }
+	// if ((fd = open(name, O_SYMLINK)) != -1)
+	// {
+	// 	close(fd);
+	// 	return (1);
+	// }
+	// else
+	// 	return (0);
 }
 
 t_elem	*create_elem(char *content, t_data *data, size_t length)

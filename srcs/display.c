@@ -69,10 +69,29 @@ void display_content(t_elem *elem, t_data *data)
 	}
 }
 
-void display_bottom(t_data *data)
+void display_help()
 {
-	(void)data;
-	/* if (data->) */
+	exec_tcap("cl");
+	exec_tcap("ve");
+	my_putstr("Move : arrow keys\n");
+	my_putstr("Select : space key\n");
+	my_putstr("Valid : return key\n");
+	my_putstr("Delete : delete key\n");
+	my_putstr("Search : R key\n");
+	my_putstr("Quit : echap key");
+}
+
+void display_bottom(t_data *data, int line_used)
+{
+	if (data->win_x > 24 && data->win_y >= 6)
+	{
+		while (line_used <= data->win_y)
+		{
+			my_putstr("\n");
+			line_used++;
+		}
+		my_putstr("Push on H for help");
+	}
 }
 
 int	verif_empty_line(int *line_used, t_data *data, t_elem *nxt_elem)
@@ -174,5 +193,5 @@ void display_all(t_data *data)
 		list = list->next;
 		// if (data->max_column)
 	}
-	display_bottom(data);
+	display_bottom(data, line_used);
 }
