@@ -100,6 +100,7 @@ void display_help(t_data *data)
 	my_putstr("Delete : delete key\n");
 	my_putstr("Search : R key\n");
 	my_putstr("Quit : echap key");
+	my_putstr(data->current->content);
 	display_bottom(data, 6);
 }
 

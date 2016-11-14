@@ -33,7 +33,6 @@ typedef struct      s_elem {
   int         current;
   int         pick;
   int         column;
-  int         line;
 	int					nb_line;
   int         color;
   struct s_elem   *prec;
@@ -81,4 +80,5 @@ void print_elem(t_elem *elem);
 void print_pick(t_elem *list);
 void quit_prog(t_data *data, int result);
 int   verif_win(t_data *data);
+void actualize_nb_line(t_data *data, t_elem *list);
 #endif

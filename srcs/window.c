@@ -51,6 +51,7 @@ void get_window_info(t_data *data)
   {
     data->max_column = get_max_column(data);
 		data->max_line = get_max_line(data);
+    actualize_nb_line(data, data->elem);
   }
 }
 
