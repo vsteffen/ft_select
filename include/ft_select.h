@@ -45,7 +45,6 @@ typedef struct			s_data {
               int     max_column;
 							int			max_line;
               int     real_max_line;
-              int     more_one_line;
               int     win_ok;
               int     help;
               int     search;
@@ -56,9 +55,11 @@ typedef struct			s_data {
               int     win_y;
               int     win_x;
 							int			ac;
+              char    *name_term;
 }						t_data;
 
-t_termios	*init_term(char **env);
+t_termios	*init_term(char **env, char *name);
+char 		*get_term_name(char **env, char *name);
 t_termios	*singleton_termios(t_termios *termios, int i);
 void		invert_term(void);
 void		exec_tcap(char *tcap);
@@ -79,4 +80,5 @@ void display_help();
 void print_elem(t_elem *elem);
 void print_pick(t_elem *list);
 void quit_prog(t_data *data, int result);
+int   verif_win(t_data *data);
 #endif

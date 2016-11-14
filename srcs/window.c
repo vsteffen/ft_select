@@ -23,7 +23,11 @@ void	get_winsize(t_data *data)
 
 int   verif_win(t_data *data)
 {
-  if ((int)data->max_length > data->win_x * data->win_y - 1)
+  if (data->help && (data->win_x < 20 || data->win_y < 6))
+    return (0);
+  else if ((int)data->max_length > data->win_x * data->win_y - 1)
+    return (0);
+  else if (data->search && data->to_found && data->win_x < 14 + (int)ft_strlen(data->to_found))
     return (0);
   return (1);
 }
@@ -70,19 +74,12 @@ void	sigwinch(int sig)
   data = singleton_data(NULL, 0);
 	// tmp = data->win_ok;
 
-	exec_tcap("cl");
+	// exec_tcap("cl");
   get_window_info(data);
-	if (data->win_ok)
-	{
-		// printf("GG\n");
-		// exit(0);
-			exec_tcap("cl");
-			exec_tcap("ve");
-      actualize_nb_line(data, data->elem);
-			display_all(data);
-	}
-	else
-	{
+  if (!data->win_ok)
 		display_fail(data);
-	}
+	else if (data->help)
+		display_help(data);
+	else
+		display_all(data);
 }

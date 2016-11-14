@@ -81,40 +81,43 @@ void print_data(t_data *data)
 
 int init_select(t_data *data, char **av, char **env, int ac)
 {
-	if (singleton_termios(init_term(env), 1) == NULL)
+	// data->env = env;
+	if (singleton_termios(init_term(env, NULL), 1) == NULL)
 	{
 		ft_putstr_fd("Can't find terminal definition. Exiting now.\n", 2);
 		return (0);
 	}
 	ft_bzero(data, sizeof(t_data));
-
-	// signal_handler();
-
-	signal(SIGWINCH, sigwinch);
+	data->name_term = get_term_name(env, NULL);
+	signal_handler();
 	singleton_data(data, 1);
 	data->ac = ac;
 	init_elem(data, av);
 	get_window_info(data);
+	exec_tcap("vi");
+	exec_tcap("ti");
 	return (1);
 }
 
 void print_pick(t_elem *list)
 {
-	if (list)
-	{
-		if (list->pick == 1)
-			ft_putstr(list->content);
-		list = list->next;
-	}
+	int		found;
+
+	found = 0;
 	while (list)
 	{
 		if (list->pick == 1)
 		{
-			ft_putchar(' ');
+			if (found)
+				ft_putchar(' ');
+			else
+				found = 1;
 			ft_putstr(list->content);
 		}
 		list = list->next;
 	}
+	if (found)
+		ft_putchar('\n');
 }
 
 void free_elem(t_elem *elem)
@@ -158,14 +161,17 @@ void delete_button(t_data *data, t_elem *delem)
 		}
 	}
 }
+
 void search_elem(t_data *data)
 {
 	t_elem	*list;
+	int			length;
 
 	list = data->elem;
+	length = (int)ft_strlen(data->to_found);
 	while (list)
 	{
-		if (ft_strcmp(data->to_found, list->content) >= 0)
+		if (ft_strnequ(data->to_found, list->content, length))
 		{
 			data->current->current = 0;
 			data->current = list;
@@ -176,12 +182,149 @@ void search_elem(t_data *data)
 		}
 		list = list->next;
 	}
+	free(data->to_found);
+	data->to_found = NULL;
+}
+
+void delete_search(t_data *data)
+{
+	char	*ptr;
+
+	if (!data->to_found[0])
+	{
+		free(data->to_found);
+		data->to_found = NULL;
+		data->search = 0;
+	}
+	else
+	{
+		ptr = data->to_found;
+		data->to_found[ft_strlen(data->to_found) - 1] = '\0';
+		data->to_found = ft_strdup(data->to_found);
+		free(ptr);
+	}
+}
+
+int		small_penis_up(int x, int i, t_data *data)
+{
+	int		beg;
+	int		ret;
+	int		limit;
+
+	beg = (x) ? x : data->max_column;
+	ret = 0;
+	limit = ((i - 1) == 0) ? data->max_column : i - 1;
+	while (beg != limit)
+	{
+		if (beg == 1)
+			beg = data->max_column;
+		else
+			beg--;
+		ret++;
+	}
+	return (i + ret);
+}
+
+t_elem	*get_true_up(t_data *data, t_elem *elem)
+{
+	t_elem	*tmp;
+	int			i;
+	int			k;
+	int			x;
+
+	i = 1;
+	k = 0;
+	tmp = elem;
+	while (tmp->prec)
+	{
+		tmp = tmp->prec;
+		i++;
+	}
+	if (i <= data->max_column)
+	{
+		tmp = elem;
+		while (tmp->next)
+		{
+			tmp = tmp->next;
+			k++;
+		}
+		x = (i + k) % data->max_column;
+		k = small_penis_up(x, i, data);
+	}
+	else
+		k = data->max_column;
+	i = 0;
+	while (i < k)
+	{
+		if (elem->prec)
+			elem = elem->prec;
+		else
+			elem = data->last;
+		i++;
+	}
+	return (elem);
+}
+
+int		small_penis_down(int limit, int i, t_data *data)
+{
+	int		ret;
+
+	ret = 1;
+	limit = ((limit + 1) > data->max_column) ? 1 : limit + 1;
+	while (ret < limit)
+	{
+		ret++;
+	}
+	return (i + ret);
+}
+
+t_elem	*get_true_down(t_data *data, t_elem *elem)
+{
+	t_elem	*tmp;
+	int			i;
+	int			k;
+	int			x;
+
+	i = 0;
+	k = 1;
+	tmp = elem;
+	while (tmp->next)
+	{
+		tmp = tmp->next;
+		i++;
+	}
+	if (i < data->max_column)
+	{
+		tmp = elem;
+		while (tmp->prec)
+		{
+			tmp = tmp->prec;
+			k++;
+		}
+		x = (data->max_column - i) + ((i + k) % data->max_column);
+		if (x > data->max_column)
+			x = x % data->max_column;
+		k = small_penis_down(x, i, data);
+	}
+	else
+		k = data->max_column;
+	i = 0;
+	while (i < k)
+	{
+		if (elem->next)
+			elem = elem->next;
+		else
+			elem = data->elem;
+		i++;
+	}
+	return (elem);
 }
 
 void handle_boucle(t_data *data, char buf[11])
 {
 	int		i;
 	t_elem		*elem;
+	char			*ptr;
 
 	i = 0;
 	elem = data->current;
@@ -215,22 +358,24 @@ void handle_boucle(t_data *data, char buf[11])
 		// elem = data->elem;
 		// elem->current = 1;
 	}
-	else if (buf[0] == 104 && buf[1] == 0)
+	else if (buf[0] == 104 && buf[1] == 0 && !data->search)
 	{
 		if (data->help)
 			data->help = 0;
 		else
 		{
 			data->help = 1;
-			// display_help();
+			display_help(data);
 		}
 			// display_help();
 	}
-	else if (buf[0] == 114 && buf[1] == 0)
+	else if (buf[0] == 18 && buf[1] == 0 && !data->help)
 	{
+		if (!data->search)
+			data->to_found = ft_strdup("");
 		data->search = 1;
 	}
-	else if (buf[0] == 32 && buf[1] == 0)
+	else if (buf[0] == 32 && buf[1] == 0 && !data->search)
 	{ // ESPACE
 		if (data->current->pick == 0)
 			data->current->pick = 1;
@@ -240,7 +385,7 @@ void handle_boucle(t_data *data, char buf[11])
 		data->current = (data->current->next) ? (data->current->next) : (data->elem);
 		data->current->current = 1;
 	}
-	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 68 && buf[3] == 0)
+	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 68 && buf[3] == 0 && !data->search)
 	{ // GAUCHE
 		// if (1 < elem->column)
 		// {
@@ -253,7 +398,7 @@ void handle_boucle(t_data *data, char buf[11])
 			data->current = elem;
 		// }
 	}
-	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 67 && buf[3] == 0)
+	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 67 && buf[3] == 0 && !data->search)
 	{ // DROITE
 		// if (elem->column < data->max_column)
 		// {
@@ -270,36 +415,25 @@ void handle_boucle(t_data *data, char buf[11])
 		// 	printf("Max_line = %d\n", data->max_line);
 		// }
 	}
-	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 65 && buf[3] == 0)
+	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 65 && buf[3] == 0 && !data->search)
 	{ // HAUT
 		elem->current = 0;
-		while (i < data->max_column && data->more_one_line)
-		{
-			if (elem->prec)
-				elem = elem->prec;
-			else
-			{
-				// i = data->max_column - i;
-				elem = data->last;
-			}
-			i++;
-		}
+		elem = get_true_up(data, elem);
 		elem->current = 1;
 		data->current = elem;
 	}
-	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 66 && buf[3] == 0)
+	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 66 && buf[3] == 0 && !data->search)
 	{ // BAS
 		elem->current = 0;
-		while (i < data->max_column && data->more_one_line)
-		{
-			if (elem->next)
-				elem = elem->next;
-			else
-				elem = data->elem;
-			i++;
-		}
+		elem = get_true_down(data, elem);
 		elem->current = 1;
 		data->current = elem;
+	}
+	else if (data->search && buf[1] == 0)
+	{
+		ptr = data->to_found;
+		data->to_found = ft_strjoin(data->to_found, &buf[0]);
+		free(ptr);
 	}
 }
 
@@ -333,20 +467,21 @@ void boucle(t_data *data)
 			display_fail(data);
 		else
 		{
-			if (data->help && !(buf[0] == 104 && buf[1] == 0))
-				display_help();
+			if (data->help && !((buf[0] == 104 || buf[0] == 127 || buf[0] == 27) && buf[1] == 0))
+				display_help(data);
 			else
 			{
 				handle_boucle(data, buf);
 				if (!data->help)
-				display_all(data);
+					display_all(data);
 			}
 				// printf("123456789012ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\n");
-				printf("Touche = [%d][%d][%d][%d][%d][%d][%d][%d]\n", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
-				ft_bzero(buf, 11);
+				// printf("Touche = [%d][%d][%d][%d][%d][%d][%d][%d]\n", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
+			ft_bzero(buf, 11);
+			data->win_ok = verif_win(data);
 		}
 	}
-	free(singleton_termios(NULL, 0));
+	// free(singleton_termios(NULL, 0));
 }
 
 int	main(int ac, char **av, char **env) {
@@ -355,10 +490,9 @@ int	main(int ac, char **av, char **env) {
 	if (ac > 1)
 	{
 		if (!init_select(&data, av, env, ac))
-			return (0);
+			return (1);
 		// print_elem(data.elem);
 		// print_data(&data);
-		exec_tcap("cs");
 
 		// printf("123456789012 123456789012 123456789012 123456789012 123456789012 123456789012 123456789012 123456789012 123456789012 123456789012 123456789012 123456789012 123456789012\n");
 

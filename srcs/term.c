@@ -1,10 +1,12 @@
 
 #include "ft_select.h"
 
-char 		*get_term_name(char **env)
+char 		*get_term_name(char **env, char *name)
 {
 	unsigned int i;
 
+	if (name)
+		return (ft_strdup(name));
 	i = 0;
 	while (env[i])
 	{
@@ -15,7 +17,7 @@ char 		*get_term_name(char **env)
 	return (NULL);
 }
 
-t_termios	*init_term(char **env)
+t_termios	*init_term(char **env, char *name)
 {
 	t_termios	term;
 	t_termios	*ret;
@@ -30,15 +32,17 @@ t_termios	*init_term(char **env)
 	term.c_cc[VTIME] = 0;
 	if (isatty(0) && tcsetattr(0, TCSADRAIN, &term) == -1)
 		return (NULL);
-	name_term = get_term_name(env);
+	name_term = get_term_name(env, name);
 	if (name_term == NULL)
 		return (NULL);
 	if (tgetent(NULL, name_term) == ERR)
 	{
 		free(name_term);
+		// printf("EUHHHHHHHHHHHHHHHHHHHH\n");
 		free(ret);
 		return (NULL);
 	}
+	// printf("EUHHHHHHHHHHHHHHHHHHHH\n");
 	free(name_term);
 	return (ret);
 }
@@ -80,19 +84,25 @@ void		exec_tcap(char *tcap)
 	tputs(tgetstr(tcap, NULL), 1, my_putchar);
 }
 
-void		invert_term(void)
+void		invert_term()
 {
 	t_termios	*tmp_terms;
-	t_termios	*current;
+	// t_termios	*current;
+	// t_data		*data;
 
-	current = (t_termios *)mallocp(sizeof(t_termios));
-	if (current && (tmp_terms = singleton_termios(NULL, 0)))
+	// current = (t_termios *)mallocp(sizeof(t_termios));
+	if ((tmp_terms = singleton_termios(NULL, 0)))
 	{
-		tcgetattr(0, current);
+		// tcgetattr(0, current);
 		if (isatty(0))
 			tcsetattr(0, TCSADRAIN, tmp_terms);
-		exec_tcap("ve");
 		free(tmp_terms);
-		singleton_termios(current, 1);
+		// singleton_termios(current, 1);
 	}
+	// data = singleton_data(NULL, 0);
+	// if (data->am_flag)
+	// 	exec_tcap("sa");
+	exec_tcap("cl");
+	exec_tcap("te");
+	exec_tcap("ve");
 }

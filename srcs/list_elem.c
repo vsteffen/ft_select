@@ -12,7 +12,7 @@ int		get_color(char *name)
 	// }
 	if ((ret = lstat(name, &stat)) != -1)
 	{
-		printf("File = [%s]\n", name);
+		// printf("File = [%s]\n", name);
 		if (S_ISDIR(stat.st_mode))
 			return (2);
 		else if (stat.st_mode & S_IXUSR || stat.st_mode & S_IXGRP ||
