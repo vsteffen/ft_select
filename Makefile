@@ -29,6 +29,8 @@ SRC = ft_select.c \
 			list_elem.c \
 			window.c \
 			display.c \
+			key_up.c \
+			key_down.c \
 
 # OBJ_NAME = $(wildcard $(ROOT)/srcs/$(SRC))
 

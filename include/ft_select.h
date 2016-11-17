@@ -81,4 +81,5 @@ void print_pick(t_elem *list);
 void quit_prog(t_data *data, int result);
 int   verif_win(t_data *data);
 void actualize_nb_line(t_data *data, t_elem *list);
+void  exec_key_up(t_data *data, t_elem *elem);
 #endif

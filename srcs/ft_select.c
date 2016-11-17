@@ -205,66 +205,6 @@ void delete_search(t_data *data)
 	}
 }
 
-int		small_penis_up(int x, int i, t_data *data)
-{
-	int		beg;
-	int		ret;
-	int		limit;
-
-	beg = (x) ? x : data->max_column;
-	ret = 0;
-	limit = ((i - 1) == 0) ? data->max_column : i - 1;
-	while (beg != limit)
-	{
-		if (beg == 1)
-			beg = data->max_column;
-		else
-			beg--;
-		ret++;
-	}
-	return (i + ret);
-}
-
-t_elem	*get_true_up(t_data *data, t_elem *elem)
-{
-	t_elem	*tmp;
-	int			i;
-	int			k;
-	int			x;
-
-	i = 1;
-	k = 0;
-	tmp = elem;
-	while (tmp->prec)
-	{
-		tmp = tmp->prec;
-		i++;
-	}
-	if (i <= data->max_column)
-	{
-		tmp = elem;
-		while (tmp->next)
-		{
-			tmp = tmp->next;
-			k++;
-		}
-		x = (i + k) % data->max_column;
-		k = small_penis_up(x, i, data);
-	}
-	else
-		k = data->max_column;
-	i = 0;
-	while (i < k)
-	{
-		if (elem->prec)
-			elem = elem->prec;
-		else
-			elem = data->last;
-		i++;
-	}
-	return (elem);
-}
-
 int		small_penis_down(int limit, int i, t_data *data)
 {
 	int		ret;
@@ -416,12 +356,7 @@ void handle_boucle(t_data *data, char buf[11])
 		// }
 	}
 	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 65 && buf[3] == 0 && !data->search)
-	{ // HAUT
-		elem->current = 0;
-		elem = get_true_up(data, elem);
-		elem->current = 1;
-		data->current = elem;
-	}
+		exec_key_up(data, elem);
 	else if (buf[0] == 27 && buf[1] == 91 && buf[2] == 66 && buf[3] == 0 && !data->search)
 	{ // BAS
 		elem->current = 0;
