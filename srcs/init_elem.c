@@ -1,18 +1,12 @@
 #include "ft_select.h"
 
-int		get_color(char *name)
+static int		get_color(char *name)
 {
 	int		ret;
 	t_stat		stat;
-	// if ((fd = open(name, O_DIRECTORY)))
-	// {
-	// 	close(fd);
-	// 	printf("LOL");
-	// 	return (2);
-	// }
+
 	if ((ret = lstat(name, &stat)) != -1)
 	{
-		// printf("File = [%s]\n", name);
 		if (S_ISDIR(stat.st_mode))
 			return (2);
 		else if (stat.st_mode & S_IXUSR || stat.st_mode & S_IXGRP ||
@@ -23,21 +17,9 @@ int		get_color(char *name)
 	}
 	else
 		return (0);
-	// if ((fd = open(name, O_SYMLINK, S_IXUSR | S_IXGRP | S_IXOTH)) != -1)
-	// {
-	// 	close(fd);
-	// 	return (3);
-	// }
-	// if ((fd = open(name, O_SYMLINK)) != -1)
-	// {
-	// 	close(fd);
-	// 	return (1);
-	// }
-	// else
-	// 	return (0);
 }
 
-t_elem	*create_elem(char *content, t_data *data, size_t length)
+static t_elem	*create_elem(char *content, t_data *data, size_t length)
 {
 	t_elem	*elem;
 
@@ -53,7 +35,7 @@ t_elem	*create_elem(char *content, t_data *data, size_t length)
 	return (elem);
 }
 
-t_elem	*add_elem(t_elem *list, t_elem *elem)
+static t_elem	*add_elem(t_elem *list, t_elem *elem)
 {
 	t_elem *tmp;
 
@@ -65,4 +47,27 @@ t_elem	*add_elem(t_elem *list, t_elem *elem)
 	list->next = elem;
   elem->prec = list;
 	return (tmp);
+}
+
+void	init_elem(t_data *data, char **av)
+{
+	unsigned int	i;
+	size_t				length_tmp;
+	size_t				length;
+
+	i = 1;
+	length_tmp = 0;
+	length = 0;
+	get_winsize(data);
+	while (av[i])
+	{
+		if ((length = ft_strlen(av[i])) > length_tmp)
+			length_tmp = length;
+		data->elem = add_elem(data->elem, create_elem(ft_strdup(av[i]), data, length));
+		i++;
+	}
+	data->elem->current = 1;
+	data->last = get_last_elem(data->elem);
+	data->current = data->elem;
+	data->max_length = length_tmp;
 }

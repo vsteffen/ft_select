@@ -1,7 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   key_up.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vsteffen <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2016/11/17 15:56:51 by vsteffen          #+#    #+#             */
+/*   Updated: 2016/11/17 17:28:06 by vsteffen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "ft_select.h"
 
-int		small_penis_up(int x, int i, t_data *data)
+static int		small_penis_up(int x, int i, t_data *data)
 {
 	int		beg;
 	int		ret;
@@ -21,7 +32,7 @@ int		small_penis_up(int x, int i, t_data *data)
 	return (i + ret);
 }
 
-void		init_true_up(int var[3], t_elem *tmp)
+static void		init_true_up(int var[3], t_elem *tmp)
 {
 	var[0] = 1;
 	var[1] = 0;
@@ -32,7 +43,7 @@ void		init_true_up(int var[3], t_elem *tmp)
 	}
 }
 
-t_elem		*ret_true_up(int var[3], t_elem *elem, t_data *data)
+static t_elem	*ret_true_up(int var[3], t_elem *elem, t_data *data)
 {
 	var[0] = 0;
 	while (var[0] < var[1])
@@ -46,10 +57,10 @@ t_elem		*ret_true_up(int var[3], t_elem *elem, t_data *data)
 	return (elem);
 }
 
-t_elem		*get_true_up(t_data *data, t_elem *elem)
+static t_elem	*get_true_up(t_data *data, t_elem *elem)
 {
 	t_elem	*tmp;
-	int	var[3];
+	int		var[3];
 
 	init_true_up(var, elem);
 	if (var[0] <= data->max_column)
@@ -68,7 +79,7 @@ t_elem		*get_true_up(t_data *data, t_elem *elem)
 	return (ret_true_up(var, elem, data));
 }
 
-void		exec_key_up(t_data *data, t_elem *elem)
+void			exec_key_up(t_data *data, t_elem *elem)
 {
 	elem->current = 0;
 	elem = get_true_up(data, elem);

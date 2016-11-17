@@ -26,11 +26,15 @@ SRC = ft_select.c \
 			term.c \
 			singleton.c \
 			signals.c \
-			list_elem.c \
+			init_elem.c \
 			window.c \
 			display.c \
 			key_up.c \
 			key_down.c \
+			key_delete.c \
+			key_other1.c \
+			key_other2.c \
+			function1.c \
 
 # OBJ_NAME = $(wildcard $(ROOT)/srcs/$(SRC))
 
