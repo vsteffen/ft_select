@@ -1,21 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   term.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vsteffen <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2016/11/18 16:24:45 by vsteffen          #+#    #+#             */
+/*   Updated: 2016/11/18 16:25:24 by vsteffen         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "ft_select.h"
-
-char 		*get_term_name(char **env, char *name)
-{
-	unsigned int i;
-
-	if (name)
-		return (ft_strdup(name));
-	i = 0;
-	while (env[i])
-	{
-		if (ft_strnequ("TERM=", env[i], 5))
-			return (ft_strdup(env[i] + 5));
-		i++;
-	}
-	return (NULL);
-}
 
 t_termios	*init_term(char **env, char *name)
 {
@@ -38,16 +33,14 @@ t_termios	*init_term(char **env, char *name)
 	if (tgetent(NULL, name_term) == ERR)
 	{
 		free(name_term);
-		// printf("EUHHHHHHHHHHHHHHHHHHHH\n");
 		free(ret);
 		return (NULL);
 	}
-	// printf("EUHHHHHHHHHHHHHHHHHHHH\n");
 	free(name_term);
 	return (ret);
 }
 
-void my_putstr(char *str)
+void		my_putstr(char *str)
 {
 	int	i;
 
@@ -84,24 +77,16 @@ void		exec_tcap(char *tcap)
 	tputs(tgetstr(tcap, NULL), 1, my_putchar);
 }
 
-void		invert_term()
+void		invert_term(void)
 {
 	t_termios	*tmp_terms;
-	// t_termios	*current;
-	// t_data		*data;
 
-	// current = (t_termios *)mallocp(sizeof(t_termios));
 	if ((tmp_terms = singleton_termios(NULL, 0)))
 	{
-		// tcgetattr(0, current);
 		if (isatty(0))
 			tcsetattr(0, TCSADRAIN, tmp_terms);
 		free(tmp_terms);
-		// singleton_termios(current, 1);
 	}
-	// data = singleton_data(NULL, 0);
-	// if (data->am_flag)
-	// 	exec_tcap("sa");
 	exec_tcap("cl");
 	exec_tcap("te");
 	exec_tcap("ve");

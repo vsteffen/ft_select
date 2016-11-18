@@ -23,20 +23,21 @@ LIBS = $(ROOT)/lib/libft.a \
 			-ltermcap
 
 SRC = ft_select.c \
-			term.c \
+			term1.c \
+			term2.c \
 			singleton.c \
 			signals.c \
 			init_elem.c \
 			window.c \
-			display.c \
+			display1.c \
+			display2.c \
+			display3.c \
 			key_up.c \
 			key_down.c \
 			key_delete.c \
 			key_other1.c \
 			key_other2.c \
-			function1.c \
-
-# OBJ_NAME = $(wildcard $(ROOT)/srcs/$(SRC))
+			function.c \
 
 OBJ = $(patsubst %.c, $(OPATH)/%.o, $(SRC))
 

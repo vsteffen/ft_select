@@ -71,7 +71,6 @@ void		boucle(t_data *data)
 					display_all(data);
 			}
 			ft_bzero(buf, 11);
-			data->win_ok = verif_win(data);
 		}
 	}
 	ft_putstr_fd("Error while reading stdin. Exiting now\n", 2);

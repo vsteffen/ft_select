@@ -1,31 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   singleton.c                                        :+:      :+:    :+:   */
+/*   term2.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vsteffen <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/11/18 16:22:01 by vsteffen          #+#    #+#             */
-/*   Updated: 2016/11/18 16:22:02 by vsteffen         ###   ########.fr       */
+/*   Created: 2016/11/18 16:27:34 by vsteffen          #+#    #+#             */
+/*   Updated: 2016/11/18 16:28:09 by vsteffen         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+
 #include "ft_select.h"
 
-t_termios	*singleton_termios(t_termios *termios, int i)
+char		*get_term_name(char **env, char *name)
 {
-	static t_termios *singleton = NULL;
+	unsigned int i;
 
-	if (i)
-		singleton = termios;
-	return (singleton);
-}
-
-t_data		*singleton_data(t_data *data, int i)
-{
-	static t_data *singleton = NULL;
-
-	if (i)
-		singleton = data;
-	return (singleton);
+	if (name)
+		return (ft_strdup(name));
+	i = 0;
+	while (env[i])
+	{
+		if (ft_strnequ("TERM=", env[i], 5))
+			return (ft_strdup(env[i] + 5));
+		i++;
+	}
+	return (NULL);
 }
